@@ -17,20 +17,35 @@ def clear_input():
     sys.stdout.write('\x1b[2K')
 
 
+def print_qwerty_keyboard(key_colors):
+    keyboard = [
+        ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
+        ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
+        ['z', 'x', 'c', 'v', 'b', 'n', 'm']
+    ]
+
+    for i, row in enumerate(keyboard):
+        print(i * " ", end="")
+        for key in row:
+            colored_key = colored(key, key_colors[key])
+            print(colored_key, end=" ")
+        print()
+
+
 introduction()
 
 play_again = "y"
 
 while play_again == "y":
     word = random.choice(words).lower()
-    print(word)
-    keyboard_letters = dict.fromkeys(string.ascii_lowercase, "grey")
+    keyboard_letters = dict.fromkeys(string.ascii_lowercase, "white")
 
     for attempt in range(1, 7):
+        print_qwerty_keyboard(keyboard_letters)
         guess = input().lower()
 
         if guess not in words or len(guess) != 5 or not guess.isalpha():
-            print(colored("Invalid word. Please try again", "red"))
+            print(colored("Invalid word.", "red"))
             if attempt - 1 > 0:
                 attempt -= 1
             continue
@@ -45,22 +60,25 @@ while play_again == "y":
             for i in range(len(this_word)):
                 if guess[i] == this_word[i]:
                     result[i] = colored(guess[i], "green")
+                    keyboard_letters[guess[i]] = "green"
                     this_word = this_word.replace(guess[i], "_")
                 else:
                     result[i] = colored(guess[i], "grey")
+                    keyboard_letters[guess[i]] = "grey"
 
             for i in range(len(this_word)):
                 if guess[i] in this_word:
                     result[i] = colored(guess[i], "yellow")
+                    keyboard_letters[guess[i]] = "green"
                     this_word = this_word.replace(guess[i], "_")
 
             print(''.join(result), end="\n\n")
 
         if guess == word:
             print(
-                colored("\nYou win! You got the word in {attempt} tries", "green"))
+                colored(f"\nYou win! You got the word, {word}, in {attempt} tries", "green", attrs=["bold"]))
             break
         elif attempt == 6:
-            print(colored("\nYou lose! The word was {word}", "red"))
+            print(colored(f"\nYou lose! The word was {word}", "red"))
 
-    play_again = input("Do you want to play again? (y/n): ")
+    play_again = input(colored("\nDo you want to play again? (y/n): ", "blue")).lower()
