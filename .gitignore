@@ -6,6 +6,9 @@ __pycache__/
 # C extensions
 *.so
 
+# Local data files
+wordle_words.txt
+
 # Distribution / packaging
 .Python
 build/

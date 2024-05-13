@@ -1,8 +1,6 @@
-import os
 import random
 import string
 import sys
-import time
 from typing import Literal
 
 from termcolor import colored
@@ -58,7 +56,7 @@ invalid_word = False
 words = fetch_wordle_words()
 
 while play_again == "y":
-    word = "aroma" # random.choice(words).lower()
+    word = random.choice(words).lower()
     keyboard_letters = dict.fromkeys(string.ascii_lowercase, "white")
     attempt = 0
 
@@ -95,11 +93,11 @@ while play_again == "y":
                 result[i] = colored(guess[i], "grey")
                 if keyboard_letters[guess[i]] != "green":
                     keyboard_letters[guess[i]] = "grey"
-                    
+
         if this_word == "_____":
             you_win(attempt, word)
             break
-        
+
         for i in range(len(this_word)):
             if guess[i] in this_word:
                 result[i] = colored(guess[i], "yellow")

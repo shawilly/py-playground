@@ -2,18 +2,31 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 import re
+import os
 
-response = requests.get(
-    'https://www.wordunscrambler.net/word-list/wordle-word-list')
+def fetch_wordle_words() -> list[str]:
+    # Check if the word list is already downloaded
+    if os.path.exists('wordle_words.txt'):
+        with open('wordle_words.txt', 'r') as file:
+            return [line.strip() for line in file.readlines()]
 
-soup = BeautifulSoup(response.text, 'html.parser')
+    response = requests.get(
+        'https://www.wordunscrambler.net/word-list/wordle-word-list')
 
-words_html = soup.find_all('li', class_="invert light")
+    if response.status_code == 200:
+        soup = BeautifulSoup(response.text, 'html.parser')
+        words_html = soup.find_all('li', class_="invert light")
 
-words = []
+        words = []
+        for word_html in words_html:
+            word_text = word_html.find('a').text.strip()
+            words.append(word_text)
 
-for word_html in words_html:
-    word_soup = BeautifulSoup(str(word_html), 'html.parser')
-    a = str(word_soup.find('a'))
-    word = re.search(r'<a.*?>(.*?)</a>', a).group(1)
-    words.append(word)
+        # Save the words to a local file
+        with open('wordle_words.txt', 'w') as file:
+            file.write('\n'.join(words))
+
+        return words
+    else:
+        print("Failed to fetch the word list.")
+        return []
